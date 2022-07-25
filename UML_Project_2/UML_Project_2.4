@@ -7,8 +7,10 @@ CREATE TABLE IF NOT EXISTS public.profession
 (
     prof_id bigserial NOT NULL,
     profession character varying(50),
+    CONSTRAINT prof_id UNIQUE (prof_id),
     PRIMARY KEY (prof_id)
 );
+
 
 SELECT * FROM profession;
 
