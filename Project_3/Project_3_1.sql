@@ -16,7 +16,7 @@ SELECT * FROM product_table;
 
 INSERT INTO product_table (description, "price (in Rand)")
 VALUES 
---('Milk', 30.21);
+('Milk', 30.21),
 ('Sugar', 22.52),
 ('Bread', 19.99),
 ('Coca-cola', 26.99),
@@ -26,7 +26,7 @@ VALUES
 CREATE TABLE IF NOT EXISTS public.cart_table
 (
     product_id bigint NOT NULL,
-    quantity numeric(4) NOT NULL  
+    quantity numeric(4) NOT NULL CHECK ( quantity > -1) 
 );
 
 SELECT * FROM cart_table;
@@ -47,17 +47,19 @@ INNER JOIN product_table ON cart_table.product_id=product_table.product_id;
 
 -- Update Cart_Table add 1 --
 update cart_table set cart_table.quantity = cart_table.quantity+1 
-where exists (SELECT * FROM cart_table  WHERE cart_table.product_id=1)--IF THIS PRODUCT EXISTS THEN THE UPDATE WILL BE DONE
-and cart_table.product_id=1 ;
+where exists (SELECT * FROM cart_table  WHERE cart_table.product_id=5)--IF THIS PRODUCT EXISTS THEN THE UPDATE WILL BE DONE
+and cart_table.product_id=5 ;
 --SHOW CART
 SELECT description, quantity, "price (in Rand)", quantity * "price (in Rand)" AS subtotal FROM cart_table
 INNER JOIN product_table ON cart_table.product_id=product_table.product_id;
 
 
 -- IF Quantity = 0 add product to Cart table --
-INSERT INTO cart_table (product_id, quantity)
-VALUES 
-(1,1);
+insert into cart_table (product_id, quantity)
+select 
+    5,1
+where not exists (
+    select 1 from cart_table where product_id = 5);
 --SHOW CART
 SELECT description, quantity, "price (in Rand)", quantity * "price (in Rand)" AS subtotal FROM cart_table
 INNER JOIN product_table ON cart_table.product_id=product_table.product_id;
@@ -65,14 +67,14 @@ INNER JOIN product_table ON cart_table.product_id=product_table.product_id;
 
 -- Update Cart_Table remove 1 --
 update cart_table set cart_table.quantity = cart_table.quantity -1 
-where exists (SELECT * FROM cart_table  WHERE cart_table.product_id=1)--IF THIS PRODUCT EXISTS THEN THE UPDATE WILL BE DONE
-and cart_table.product_id=1;
+where exists (SELECT * FROM cart_table  WHERE cart_table.product_id=3)--IF THIS PRODUCT EXISTS THEN THE UPDATE WILL BE DONE
+and cart_table.product_id=3;
 --SHOW CART
 SELECT description, quantity, "price (in Rand)", quantity * "price (in Rand)" AS subtotal FROM cart_table
 INNER JOIN product_table ON cart_table.product_id=product_table.product_id;
 
 
--- IF Quantity is 0 --
+-- IF Quantity is 0 in cart--
 DELETE FROM cart_table WHERE cart_table.quantity <= 0;
 --SHOW CART
 SELECT description, quantity, "price (in Rand)", quantity * "price (in Rand)" AS subtotal FROM cart_table
